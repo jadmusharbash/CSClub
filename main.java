@@ -1,47 +1,77 @@
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class Recommender {
     public static void main(String[] args) {
-        // List of movies
-        List<String> movies = new ArrayList<>();
-        movies.add("Inception");
-        movies.add("The Matrix");
-        movies.add("Interstellar");
-        movies.add("The Dark Knight");
-        movies.add("Avatar");
-
-        // List of games
-        List<String> games = new ArrayList<>();
-        games.add("The Legend of Zelda");
-        games.add("Minecraft");
-        games.add("Fortnite");
-        games.add("Call of Duty");
-        games.add("Red Dead Redemption");
+        // Game recommendations categorized by genres with prices and compatibility
+        Map<String, List<Game>> games = new HashMap<>();
+        games.put("Adventure", Arrays.asList(
+                new Game("The Legend of Zelda", 60, "Console"),
+                new Game("Red Dead Redemption", 40, "PC/Console")
+        ));
+        games.put("Sandbox", Arrays.asList(
+                new Game("Minecraft", 30, "PC/Phone/Console"),
+                new Game("Terraria", 10, "PC/Phone/Console")
+        ));
+        games.put("Battle Royale", Arrays.asList(
+                new Game("Fortnite", 0, "PC/Phone/Console"),
+                new Game("Apex Legends", 0, "PC/Console")
+        ));
 
         // Scanner for user input
         Scanner scanner = new Scanner(System.in);
+        String choice;
 
-        // Ask user for their preference
-        System.out.println("What would you like a recommendation for? (1: Movie, 2: Game)");
-        int choice = scanner.nextInt();
+        // Main prompt
+        while (true) {
+            System.out.println("Would you like a recommendation for a Game? (Enter 'Game' or 'Quit' to exit)");
+            choice = scanner.nextLine().trim().toLowerCase();
 
-        // Recommend based on the user's choice
-        if (choice == 1) {
-            // Recommend a movie
-            System.out.println("Here are some movie recommendations:");
-            for (String movie : movies) { // Loop through the list of movies
-                System.out.println("- " + movie);
+            if (choice.equals("game")) {
+                // Ask for price range
+                System.out.println("What is your maximum budget? (Enter a number in dollars)");
+                int maxPrice = scanner.nextInt();
+                scanner.nextLine(); // Consume the newline character
+
+                // Ask for compatibility preference
+                System.out.println("Which platform are you looking for? (PC, Console, Phone, or All)");
+                String compatibility = scanner.nextLine().trim().toLowerCase();
+
+                // Filter and recommend games
+                System.out.println("Here are some games that match your preferences:");
+                boolean found = false;
+
+                for (String genre : games.keySet()) {
+                    for (Game game : games.get(genre)) {
+                        if (game.price <= maxPrice &&
+                                (compatibility.equals("all") || game.compatibility.toLowerCase().contains(compatibility))) {
+                            System.out.println("- " + game.name + " ($" + game.price + ", " + game.compatibility + ")");
+                            found = true;
+                        }
+                    }
+                }
+
+                if (!found) {
+                    System.out.println("No games match your preferences. Try increasing your budget or selecting a different platform.");
+                }
+            } else if (choice.equals("quit")) {
+                System.out.println("Thank you for using the Recommender!");
+                break;
+            } else {
+                System.out.println("Invalid choice. Please enter 'Game' or 'Quit'.");
             }
-        } else if (choice == 2) {
-            // Recommend a game
-            System.out.println("Here are some game recommendations:");
-            for (String game : games) { // Loop through the list of games
-                System.out.println("- " + game);
-            }
-        } else {
-            System.out.println("Invalid choice. Please select 1 or 2.");
         }
+    }
+}
+
+// Game class to store game details
+class Game {
+    String name;
+    int price;
+    String compatibility;
+
+    public Game(String name, int price, String compatibility) {
+        this.name = name;
+        this.price = price;
+        this.compatibility = compatibility;
     }
 }
